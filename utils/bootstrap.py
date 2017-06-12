@@ -28,7 +28,7 @@ class Buffer(object):
     def __call__(self, batch_size):
         if self.pointer + batch_size >= self.data.shape[0]:
             self.pointer = 0
-            self.perm  = np.random.permutation(self.data.shape[0])
+            self.perm = np.random.permutation(self.data.shape[0])
         start = self.pointer
         end = self.pointer + batch_size
         self.pointer = end

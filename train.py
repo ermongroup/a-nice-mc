@@ -3,7 +3,7 @@ import os
 from objectives.expression.ring2d import Ring2d
 from models.discriminator import MLPDiscriminator
 from models.generator import create_nice_network
-from train.wgan_gradient_penalty import Trainer
+from train.wgan_nll import Trainer
 
 os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
@@ -19,8 +19,8 @@ generator = create_nice_network(
 )
 
 
-def noise_sampler(x):
-    return np.random.normal(0.0, 1.0, [x, 2])
+def noise_sampler(bs):
+    return np.random.normal(0.0, 1.0, [bs, 2])
 
 
 trainer = Trainer(generator, energy_fn, discriminator, noise_sampler, b=8, m=2)

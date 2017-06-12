@@ -12,5 +12,5 @@ class Energy(object):
     def statistics(z):
         return z
 
-    def evaluate(self, z):
+    def evaluate(self, z, path):
         raise NotImplementedError(str(type(self)))

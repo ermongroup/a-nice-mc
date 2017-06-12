@@ -12,7 +12,7 @@ class Discriminator(object):
 
 class MLPDiscriminator(Discriminator):
     def __init__(self, dims):
-        super(MLPDiscriminator).__init__()
+        super(MLPDiscriminator, self).__init__()
         self.dims = dims
 
     def __call__(self, x, reuse=True):

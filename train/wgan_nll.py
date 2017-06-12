@@ -14,7 +14,7 @@ class Trainer(object):
         self.energy_fn = energy_fn
         self.logger = get_logger(__name__)
         self.train_op = TrainingOperator(network)
-        self.infer_op = InferenceOperator(network)
+        self.infer_op = InferenceOperator(network, energy_fn)
         self.b = tf.to_int32(tf.reshape(tf.multinomial(tf.ones([1, b]), 1), [])) + 1
         self.m = tf.to_int32(tf.reshape(tf.multinomial(tf.ones([1, m]), 1), [])) + 1
         self.network = network
@@ -29,7 +29,7 @@ class Trainer(object):
         # Obtain values from inference ops
         # `infer_op` contains Metropolis step
         v = tf.random_normal(tf.stack([bz, self.v_dim]))
-        self.z_, self.v_ = self.infer_op([self.z, v], self.steps)
+        self.z_, self.v_ = self.infer_op((self.z, v), self.steps)
 
         # Reshape for pairwise discriminator
         x = tf.reshape(self.x, [-1, 2 * self.x_dim])
@@ -37,14 +37,14 @@ class Trainer(object):
 
         # Obtain values from train ops
         v1 = tf.random_normal(tf.stack([bz, self.v_dim]))
-        x1_, v1_ = self.train_op([self.z, v1], self.b)
+        x1_, v1_ = self.train_op((self.z, v1), self.b)
         x1_ = x1_[-1]
         x1_sg = tf.stop_gradient(x1_)
         v2 = tf.random_normal(tf.stack([bx, self.v_dim]))
-        x2_, v2_ = self.train_op([self.z, v2], self.m)
+        x2_, v2_ = self.train_op((self.x, v2), self.m)
         x2_ = x2_[-1]
         v3 = tf.random_normal(tf.stack([bx, self.v_dim]))
-        x3_, v3_ = self.train_op([x1_sg, v3], self.m)
+        x3_, v3_ = self.train_op((x1_sg, v3), self.m)
         x3_ = x3_[-1]
 
         # The pairwise discriminator has two components:
@@ -106,20 +106,19 @@ class Trainer(object):
         self.ns = noise_sampler
         self.ds = None
 
-    def sample(self, steps=5000, batch_size=100, burn_in=1000):
+    def sample(self, steps=2000, batch_size=100):
         start = time.time()
-        z, v = self.sess.run([self.z_, self.v_], feed_dict={self.z: self.ns(batch_size), self.steps: steps + burn_in})
+        z, v = self.sess.run([self.z_, self.v_], feed_dict={self.z: self.ns(batch_size), self.steps: steps})
         end = time.time()
         self.logger.info('A-NICE-MC: batches [%d] steps [%d] time [%5.4f] samples/s [%5.4f]' %
                          (batch_size, steps, end - start, (batch_size * steps) / (end - start)))
-        z, v = z[burn_in:], v[burn_in:]
         z = np.transpose(z, axes=[1, 0, 2])
         v = np.transpose(v, axes=[1, 0, 2])
         return z, v
 
     def bootstrap(self, steps=5000, burn_in=1000, batch_size=100, discard_ratio=0.5):
         z, _ = self.sample(steps + burn_in, batch_size)
-        z = np.reshape(z[burn_in:], [-1, z.shape[-1]])
+        z = np.reshape(z[:, burn_in:], [-1, z.shape[-1]])
         if self.ds:
             self.ds.discard(ratio=discard_ratio)
             self.ds.insert(z)
@@ -134,22 +133,30 @@ class Trainer(object):
                 self.xl: self.ds(4 * bs)
             }
         batch_size = 32
-        start = time.time()
+        train_time = 0
         for t in range(0, max_iters):
+            if t % epoch_size == 0:
+                self.bootstrap()
+                z, v = self.sample(steps=2000)
+                z, v = z[:, 1000:], v[:, 1000:]
+                self.energy_fn.evaluate([z, v])
+                # TODO: save model
             if t % log_freq == 0:
                 d_loss = self.sess.run(self.d_loss, feed_dict=_feed_dict(batch_size))
                 g_loss, v_loss = self.sess.run([self.g_loss, self.v_loss], feed_dict=_feed_dict(batch_size))
                 self.logger.info('Iter [%d] time [%5.4f] d_loss [%.4f] g_loss [%.4f] v_loss [%.4f]' %
-                                 (t, time.time() - start, d_loss, g_loss, v_loss))
-            if t % epoch_size == 0:
-                self.bootstrap()
-                z, v = self.sample()
-                self.energy_fn.evaluate([z, v])
-                # TODO: save model
+                                 (t, train_time, d_loss, g_loss, v_loss))
+            start = time.time()
             for _ in range(0, d_iters):
                 self.sess.run(self.d_train, feed_dict=_feed_dict(batch_size))
             self.sess.run(self.g_train, feed_dict=_feed_dict(batch_size))
+            end = time.time()
+            train_time += end - start
 
     def load(self):
         # TODO: load model
+        raise NotImplementedError(str(type(self)))
+
+    def save(self):
+        # TODO: save model
         raise NotImplementedError(str(type(self)))

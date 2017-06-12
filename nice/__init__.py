@@ -21,7 +21,7 @@ class Layer(object):
 
 
 class NiceLayer(Layer):
-    def __init__(self, dims, name='nice', reuse=False, swap=False):
+    def __init__(self, dims, name='nice', swap=False):
         """
         NICE Layer that takes in [x, v] as input and updates one of them.
         Note that for NICE, the Jacobian is always 1; but we keep it for
@@ -32,7 +32,7 @@ class NiceLayer(Layer):
         :param swap: Update x if True, or update v if False.
         """
         super(NiceLayer, self).__init__()
-        self.dims, self.reuse, self.swap = dims, reuse, swap
+        self.dims, self.reuse, self.swap = dims, False, swap
         self.name = 'generator/' + name
 
     def forward(self, inputs):
@@ -137,12 +137,12 @@ class InferenceOperator(object):
             :return: next state `z_`, and the corresponding auxiliary variable `v_`.
             """
             v = tf.random_normal(shape=tf.stack([tf.shape(z)[0], self.network.v_dim]))
-            z_, v_ = self.network([z, v], reverse=(tf.random_uniform([]) < 0.5))
+            z_, v_ = self.network([z, v], is_backward=(tf.random_uniform([]) < 0.5))
             ep = hamiltonian(z, v, self.energy_fn)
             en = hamiltonian(z_, v_, self.energy_fn)
             accept = metropolis_hastings_accept(energy_prev=ep, energy_next=en)
             z_ = tf.where(accept, z_, z)
             return z_, v_
 
-        elems = tf.zeros(steps)
+        elems = tf.zeros([steps])
         return tf.scan(fn, elems, inputs, back_prop=False)
