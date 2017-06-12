@@ -1,9 +1,10 @@
 import tensorflow as tf
 import numpy as np
 import time
+import os
 from nice import TrainingOperator, InferenceOperator
 from utils.bootstrap import Buffer
-from utils.logger import get_logger
+from utils.logger import create_logger
 
 
 class Trainer(object):
@@ -12,7 +13,7 @@ class Trainer(object):
                  noise_sampler,
                  b, m, eta=1.0, scale=10.0):
         self.energy_fn = energy_fn
-        self.logger = get_logger(__name__)
+        self.logger = create_logger(__name__)
         self.train_op = TrainingOperator(network)
         self.infer_op = InferenceOperator(network, energy_fn)
         self.b = tf.to_int32(tf.reshape(tf.multinomial(tf.ones([1, b]), 1), [])) + 1
@@ -105,6 +106,11 @@ class Trainer(object):
         self.sess.run(self.init_op)
         self.ns = noise_sampler
         self.ds = None
+        self.path = 'logs/' + energy_fn.name
+        try:
+            os.makedirs(self.path)
+        except OSError:
+            pass
 
     def sample(self, steps=2000, batch_size=100):
         start = time.time()
@@ -139,7 +145,7 @@ class Trainer(object):
                 self.bootstrap()
                 z, v = self.sample(steps=2000)
                 z, v = z[:, 1000:], v[:, 1000:]
-                self.energy_fn.evaluate([z, v])
+                self.energy_fn.evaluate([z, v], path=self.path)
                 # TODO: save model
             if t % log_freq == 0:
                 d_loss = self.sess.run(self.d_loss, feed_dict=_feed_dict(batch_size))

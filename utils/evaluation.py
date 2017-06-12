@@ -18,7 +18,7 @@ def effective_sample_size(x, mu, var, logger):
     :param x:
     :param mu: mean of the variable
     :param var: variance of the variable
-    :param logger: logger for results
+    :param logger: logg
     :return: effective sample size of the sequence
     Make sure that `mu` and `var` are correct!
     """

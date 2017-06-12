@@ -1,9 +1,9 @@
 import tensorflow as tf
 import numpy as np
 import time
-from utils.logger import get_logger
+from utils.logger import create_logger
 
-logger = get_logger(__name__)
+logger = create_logger(__name__)
 
 
 def kinetic_energy(v):

@@ -4,13 +4,13 @@ import matplotlib
 import matplotlib.pyplot as plt
 from objectives import Energy
 from utils.evaluation import effective_sample_size
-from utils.logger import get_logger
+from utils.logger import create_logger, save_ess
 
-logger = get_logger(__name__)
+logger = create_logger(__name__)
 
 
 class Ring2d(Energy):
-    def __init__(self, name='u', display=True):
+    def __init__(self, name='ring2d', display=True):
         super(Ring2d, self).__init__()
         self.name = name
         self.z = tf.placeholder(tf.float32, [None, 2], name='z')
@@ -43,7 +43,8 @@ class Ring2d(Energy):
     def evaluate(self, zv, path):
         z, v = zv
         ess = effective_sample_size(z, self.mean(), self.std() * self.std(), logger=logger)
-        self.visualize(zv)
+        save_ess(ess, path)
+        self.visualize(zv, path)
 
     @staticmethod
     def xlim():

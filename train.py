@@ -7,7 +7,7 @@ from train.wgan_nll import Trainer
 
 os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
-energy_fn = Ring2d()
+energy_fn = Ring2d(display=False)
 discriminator = MLPDiscriminator([400, 400, 400])
 generator = create_nice_network(
     2, 2,

@@ -3,7 +3,7 @@ import numpy as np
 import time
 from nice import TrainingOperator, InferenceOperator
 from utils.bootstrap import Buffer
-from utils.logger import get_logger
+from utils.logger import create_logger
 from utils.mmd import compute_mmd
 
 
@@ -13,7 +13,7 @@ class Trainer(object):
                  noise_sampler,
                  b, m, eta=1.0, scale=10.0):
         self.energy_fn = energy_fn
-        self.logger = get_logger(__name__)
+        self.logger = create_logger(__name__)
         self.train_op = TrainingOperator(network)
         self.infer_op = InferenceOperator(network, energy_fn)
         self.b = tf.to_int32(tf.reshape(tf.multinomial(tf.ones([1, b]), 1), [])) + 1
@@ -118,7 +118,7 @@ class Trainer(object):
         v = np.transpose(v, axes=[1, 0, 2])
         return z, v
 
-    def bootstrap(self, steps=5000, burn_in=1000, batch_size=100, discard_ratio=0.9):
+    def bootstrap(self, steps=5000, burn_in=1000, batch_size=100, discard_ratio=0.5):
         z, _ = self.sample(steps + burn_in, batch_size)
         z = np.reshape(z[:, burn_in:], [-1, z.shape[-1]])
         if self.ds:
