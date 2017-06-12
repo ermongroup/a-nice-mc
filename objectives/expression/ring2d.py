@@ -1,7 +1,5 @@
 import tensorflow as tf
 import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
 from objectives import Energy
 from utils.evaluation import effective_sample_size
 from utils.logger import create_logger, save_ess
@@ -16,9 +14,12 @@ class Ring2d(Energy):
         self.z = tf.placeholder(tf.float32, [None, 2], name='z')
         self.display = display
         if display:
+            import matplotlib.pyplot as plt
             plt.ion()
         else:
+            import matplotlib
             matplotlib.use('Agg')
+            import matplotlib.pyplot as plt
         self.fig, (self.ax1, self.ax2) = plt.subplots(nrows=2, ncols=1)
 
     def __call__(self, z):
@@ -26,7 +27,7 @@ class Ring2d(Energy):
             z1 = tf.reshape(tf.slice(z, [0, 0], [-1, 1]), [-1])
             z2 = tf.reshape(tf.slice(z, [0, 1], [-1, 1]), [-1])
             v = (tf.sqrt(z1 * z1 + z2 * z2) - 2) / 0.4
-            return 0.5 * v * v
+            return v * v
 
     @staticmethod
     def mean():
@@ -67,6 +68,7 @@ class Ring2d(Energy):
         self.ax2.set(xlim=self.xlim(), ylim=self.ylim())
 
         if self.display:
+            import matplotlib.pyplot as plt
             plt.show()
             plt.pause(0.1)
         else:
