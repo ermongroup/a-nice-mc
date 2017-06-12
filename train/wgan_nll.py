@@ -8,6 +8,11 @@ from utils.logger import create_logger
 
 
 class Trainer(object):
+    """
+    Trainer for A-NICE-MC.
+    - Wasserstein GAN loss with Gradient Penalty for x
+    - Cross entropy loss for v
+    """
     def __init__(self,
                  network, energy_fn, discriminator,
                  noise_sampler,
@@ -87,9 +92,9 @@ class Trainer(object):
         g_vars = [var for var in tf.global_variables() if 'generator' in var.name]
         d_vars = [var for var in tf.global_variables() if discriminator.name in var.name]
 
-        self.d_train = tf.train.AdamOptimizer(learning_rate=1e-4, beta1=0.5, beta2=0.9)\
+        self.d_train = tf.train.AdamOptimizer(learning_rate=5e-4, beta1=0.5, beta2=0.9)\
             .minimize(self.d_loss, var_list=d_vars)
-        self.g_train = tf.train.AdamOptimizer(learning_rate=1e-4, beta1=0.5, beta2=0.9)\
+        self.g_train = tf.train.AdamOptimizer(learning_rate=5e-4, beta1=0.5, beta2=0.9)\
             .minimize(self.g_loss, var_list=g_vars)
 
         self.init_op = tf.group(

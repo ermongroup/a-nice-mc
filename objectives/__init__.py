@@ -5,6 +5,14 @@ class Energy(object):
     def __call__(self, z):
         raise NotImplementedError(str(type(self)))
 
+    @staticmethod
+    def mean():
+        return None
+
+    @staticmethod
+    def std():
+        return None
+
     def _vector_to_model(self, v):
         return v
 
@@ -12,5 +20,5 @@ class Energy(object):
     def statistics(z):
         return z
 
-    def evaluate(self, z, path):
+    def evaluate(self, z, path=None):
         raise NotImplementedError(str(type(self)))

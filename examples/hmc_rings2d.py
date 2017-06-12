@@ -12,13 +12,21 @@ def prior(bs):
 
 if __name__ == '__main__':
     from hmc import HamiltonianMonteCarloSampler
+    from utils.statistics import NormalMonteCarloSampler
     from objectives.expression.ring2d import Ring2d
-    energy_fn = Ring2d()
-    hmc = HamiltonianMonteCarloSampler(energy_fn, prior)
-    z = hmc.sample(2000, 2000)
+
+    os.environ['CUDA_VISIBLE_DEVICES'] = ''
+
+    energy_fn = Ring2d(display=True)
+    hmc = NormalMonteCarloSampler(energy_fn, prior)
+    z = hmc.sample(8000, 8000)
+    z = z[:, 3000:]
     z = np.reshape(z, [-1, 2])
     x, y = z[:, 0], z[:, 1]
+    z = np.reshape(z, [-1, 2])
     plt.hist2d(x, y, bins=400)
     plt.xlim([-4, 4])
     plt.ylim([-4, 4])
-    plt.show()
+    #plt.savefig('ring2d.png')
+    print(np.mean(x))
+    print(np.std(x))
