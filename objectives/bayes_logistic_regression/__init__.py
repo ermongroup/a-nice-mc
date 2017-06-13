@@ -1,5 +1,7 @@
 import tensorflow as tf
 from objectives import Energy
+from utils.evaluation import effective_sample_size
+from utils.logger import save_ess
 
 
 class BayesianLogisticRegression(Energy):
@@ -23,11 +25,26 @@ class BayesianLogisticRegression(Energy):
 
         self.data = tf.constant(data, tf.float32)
         self.labels = tf.constant(labels, tf.float32)
+        self.z = tf.placeholder(tf.float32, [batch_size, self.dim])
 
         if batch_size:
-            self.data = tf.reshape(self.data, [batch_size, -1, self.x_dim])
-            self.labels = tf.reshape(self.labels, [batch_size, -1, self.y_dim])
-        self.z = tf.placeholder(tf.float32, [batch_size, self.dim])
+            self.data = tf.tile(
+                tf.reshape(self.data, [1, -1, self.x_dim]),
+                tf.stack([batch_size, 1, 1])
+            )
+            self.labels = tf.tile(
+                tf.reshape(self.labels, [1, -1, self.y_dim]),
+                tf.stack([batch_size, 1, 1])
+            )
+        else:
+            self.data = tf.tile(
+                tf.reshape(self.data, [1, -1, self.x_dim]),
+                tf.stack([tf.shape(self.z)[0], 1, 1])
+            )
+            self.labels = tf.tile(
+                tf.reshape(self.labels, [1, -1, self.y_dim]),
+                tf.stack([tf.shape(self.z)[0], 1, 1])
+            )
 
     def _vector_to_model(self, v):
         w = v[:, :-self.y_dim]
@@ -47,3 +64,9 @@ class BayesianLogisticRegression(Energy):
 
     def __call__(self, v):
         return self.energy_fn(v, self.data, self.labels)
+
+    def evaluate(self, zv, path=None):
+        z, v = zv
+        ess = effective_sample_size(z, self.mean(), self.std() * self.std(), logger=logger)
+        if path:
+            save_ess(ess, path)

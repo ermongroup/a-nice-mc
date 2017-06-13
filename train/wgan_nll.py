@@ -117,7 +117,7 @@ class Trainer(object):
         except OSError:
             pass
 
-    def sample(self, steps=2000, batch_size=100):
+    def sample(self, steps=2000, batch_size=32):
         start = time.time()
         z, v = self.sess.run([self.z_, self.v_], feed_dict={self.z: self.ns(batch_size), self.steps: steps})
         end = time.time()
@@ -127,7 +127,7 @@ class Trainer(object):
         v = np.transpose(v, axes=[1, 0, 2])
         return z, v
 
-    def bootstrap(self, steps=5000, burn_in=1000, batch_size=100, discard_ratio=0.5):
+    def bootstrap(self, steps=5000, burn_in=1000, batch_size=32, discard_ratio=0.5):
         z, _ = self.sample(steps + burn_in, batch_size)
         z = np.reshape(z[:, burn_in:], [-1, z.shape[-1]])
         if self.ds:
@@ -136,7 +136,13 @@ class Trainer(object):
         else:
             self.ds = Buffer(z)
 
-    def train(self, d_iters=5, epoch_size=500, log_freq=100, max_iters=100000):
+    def train(
+            self,
+            d_iters=5, epoch_size=500, log_freq=100, max_iters=100000,
+            bootstrap_steps=5000, bootstrap_burn_in=1000,
+            bootstrap_batch_size=32, bootstrap_discard_ratio=0.5,
+            evaluate_steps=1000, evaluate_burn_in=1000, evaluate_batch_size=32
+            ):
         def _feed_dict(bs):
             return {
                 self.z: self.ns(bs),
@@ -147,9 +153,15 @@ class Trainer(object):
         train_time = 0
         for t in range(0, max_iters):
             if t % epoch_size == 0:
-                self.bootstrap()
-                z, v = self.sample(steps=2000)
-                z, v = z[:, 1000:], v[:, 1000:]
+                self.bootstrap(
+                    steps=bootstrap_steps, burn_in=bootstrap_burn_in,
+                    batch_size=bootstrap_batch_size, discard_ratio=bootstrap_discard_ratio
+                )
+                z, v = self.sample(
+                    steps=evaluate_steps + evaluate_burn_in,
+                    batch_size=evaluate_batch_size
+                )
+                z, v = z[:, evaluate_burn_in:], v[:, evaluate_burn_in:]
                 self.energy_fn.evaluate([z, v], path=self.path)
                 # TODO: save model
             if t % log_freq == 0:

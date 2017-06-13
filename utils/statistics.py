@@ -50,14 +50,13 @@ class NormalMonteCarloSampler(object):
         return z
 
 
-def obtain_statistics(energy_fn, prior, steps, burn_in, batch_size):
-    sampler = NormalMonteCarloSampler(energy_fn, prior)
+def obtain_statistics(sampler, steps, burn_in, batch_size):
     z = sampler.sample(steps + burn_in, batch_size)
     z = z[:, burn_in:]
     z = np.reshape(z, [-1, z.shape[-1]])
-    z = energy_fn.statistics(z)
-    logger.info('{}: mean {} std {}'.format(
-        energy_fn.name,
+    z = sampler.energy_fn.statistics(z)
+    logger.info('{}: \n mean {} \n std {}'.format(
+        sampler.energy_fn.name,
         np.mean(z, axis=0, dtype=np.float64),
         np.std(z, axis=0, dtype=np.float64)
     ))
