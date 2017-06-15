@@ -1,6 +1,7 @@
+import sys
+
 import numpy as np
 import os
-import sys
 
 sys.path.append(os.getcwd())
 
@@ -11,7 +12,7 @@ def prior(bs):
 if __name__ == '__main__':
     from objectives.bayes_logistic_regression.australian import Australian
     from utils.statistics import obtain_statistics
-    from hmc import HamiltonianMonteCarloSampler
+    from utils.hmc import HamiltonianMonteCarloSampler
     from utils.logger import create_logger
 
     logger = create_logger(__name__)

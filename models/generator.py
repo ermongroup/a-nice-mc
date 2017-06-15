@@ -1,4 +1,4 @@
-from nice import NiceLayer, NiceNetwork
+from utils.nice import NiceLayer, NiceNetwork
 
 
 def create_nice_network(x_dim, v_dim, args):

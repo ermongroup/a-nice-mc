@@ -1,7 +1,8 @@
 import sys
-import os
-import numpy as np
+
 import matplotlib.pyplot as plt
+import numpy as np
+import os
 
 sys.path.append(os.getcwd())
 
@@ -11,7 +12,6 @@ def prior(bs):
 
 
 if __name__ == '__main__':
-    from hmc import HamiltonianMonteCarloSampler
     from utils.statistics import NormalMonteCarloSampler
     from objectives.expression.ring2d import Ring2d
 

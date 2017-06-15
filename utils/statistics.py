@@ -1,9 +1,11 @@
-import tensorflow as tf
-import numpy as np
 import time
+
+import numpy as np
+import tensorflow as tf
+
 from evaluation import acceptance_rate, effective_sample_size
+from utils.hmc import metropolis_hastings_accept
 from utils.logger import create_logger
-from hmc import metropolis_hastings_accept
 
 logger = create_logger(__name__)
 

@@ -1,6 +1,7 @@
+import sys
+
 import numpy as np
 import os
-import sys
 
 sys.path.append(os.getcwd())
 
@@ -10,8 +11,9 @@ def prior(bs):
 
 if __name__ == '__main__':
     from objectives.expression.ring2d import Ring2d
-    from hmc import HamiltonianMonteCarloSampler
-    from utils.statistics import obtain_statistics, NormalMonteCarloSampler
+    from utils.hmc import HamiltonianMonteCarloSampler
+    from utils.statistics import obtain_statistics
+
     os.environ['CUDA_VISIBLE_DEVICES'] = ''
     energy_fn = Ring2d(display=False)
     sampler = HamiltonianMonteCarloSampler(energy_fn, prior)

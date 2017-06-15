@@ -1,10 +1,12 @@
-import tensorflow as tf
-import numpy as np
 import time
-from nice import TrainingOperator, InferenceOperator
+
+import numpy as np
+import tensorflow as tf
+
 from utils.bootstrap import Buffer
 from utils.logger import create_logger
 from utils.mmd import compute_mmd
+from utils.nice import TrainingOperator, InferenceOperator
 
 
 class Trainer(object):

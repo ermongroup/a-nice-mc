@@ -1,5 +1,6 @@
 import tensorflow as tf
-from hmc import hamiltonian, metropolis_hastings_accept
+
+from utils.hmc import hamiltonian, metropolis_hastings_accept
 from utils.layers import dense
 
 

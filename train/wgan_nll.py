@@ -1,10 +1,12 @@
-import tensorflow as tf
-import numpy as np
 import time
+
+import numpy as np
 import os
-from nice import TrainingOperator, InferenceOperator
+import tensorflow as tf
+
 from utils.bootstrap import Buffer
 from utils.logger import create_logger
+from utils.nice import TrainingOperator, InferenceOperator
 
 
 class Trainer(object):
@@ -128,6 +130,7 @@ class Trainer(object):
         return z, v
 
     def bootstrap(self, steps=5000, burn_in=1000, batch_size=32, discard_ratio=0.5):
+        # TODO: it might be better to implement bootstrap in a separate class
         z, _ = self.sample(steps + burn_in, batch_size)
         z = np.reshape(z[:, burn_in:], [-1, z.shape[-1]])
         if self.ds:
