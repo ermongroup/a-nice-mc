@@ -48,8 +48,6 @@ class BayesianLogisticRegression(Energy):
                 tf.reshape(self.labels, [1, -1, self.y_dim]),
                 tf.stack([tf.shape(self.z)[0], 1, 1])
             )
-        print(self.data)
-        print(self.labels)
 
     def _vector_to_model(self, v):
         w = v[:, :-self.y_dim]
@@ -74,14 +72,22 @@ class BayesianLogisticRegression(Energy):
         z, v = zv
         z_ = np.reshape(z, [-1, z.shape[-1]])
         m = np.mean(z_, axis=0, dtype=np.float64)
-        v = np.var(z_, axis=0, dtype=np.float64)
+        v = np.std(z_, axis=0, dtype=np.float64)
         print('mean: {}'.format(m))
-        print('var: {}'.format(v))
+        print('std: {}'.format(v))
         logger.info('Acceptance rate %.4f' % (acceptance_rate(z)))
-        # ess = effective_sample_size(
-        #     z,
-        #     m, v,
-        #     logger=logger
-        # )
-        # if path:
-        #     save_ess(ess, path)
+        ess = effective_sample_size(
+            z,
+            self.mean(), self.std() * self.std(),
+            logger=logger
+        )
+        if path:
+            save_ess(ess, path)
+
+    @staticmethod
+    def mean():
+        return None
+
+    @staticmethod
+    def std():
+        return None

@@ -53,7 +53,7 @@ thereby making the entire objective differentiable.
 
 > Wait! How can you train on a differentiable model that is totally different from the MCMC kernel that you sample from?
 
-![](figs/nice_xv.pdf)
+![](figs/nice_xv.png)
 
 Due to the invertibility of the NICE network, if the forward operation tranforms a point in the `(x, v)` manifold to another point in the `(x, v)` manifold, then the backward operation will do the same. Meanwhile, the forward operation will encourage the points to move toward `p(x, v)` and the MH step tends to reject backward operations, thereby removing random-walk behavior.
 

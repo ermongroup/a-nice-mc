@@ -10,11 +10,15 @@ def prior(bs):
 
 if __name__ == '__main__':
     from objectives.bayes_logistic_regression.australian import Australian
-    from utils.statistics import obtain_statistics, NormalMonteCarloSampler
-    from utils.statistics import HamiltonianMonteCarloSampler
+    from utils.statistics import obtain_statistics
+    from hmc import HamiltonianMonteCarloSampler
+    from utils.logger import create_logger
+
+    logger = create_logger(__name__)
+
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
     energy_fn = Australian(batch_size=32)
     sampler = HamiltonianMonteCarloSampler(
-        energy_fn, prior, stepsize=0.1, n_steps=40
+        energy_fn, prior, stepsize=0.0115, n_steps=40
     )
-    obtain_statistics(sampler, steps=3000, burn_in=1000, batch_size=32)
+    obtain_statistics(sampler, steps=5000, burn_in=1000, batch_size=32)

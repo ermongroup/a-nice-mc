@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import time
-from evaluation import acceptance_rate
+from evaluation import acceptance_rate, effective_sample_size
 from utils.logger import create_logger
 from hmc import metropolis_hastings_accept
 
@@ -54,6 +54,13 @@ class NormalMonteCarloSampler(object):
 def obtain_statistics(sampler, steps, burn_in, batch_size):
     z = sampler.sample(steps + burn_in, batch_size)
     z = z[:, burn_in:]
+    energy_fn = sampler.energy_fn
+    effective_sample_size(
+        z,
+        energy_fn.mean(),
+        energy_fn.std() * energy_fn.std(),
+        logger
+    )
     z = np.reshape(z, [-1, z.shape[-1]])
     z = sampler.energy_fn.statistics(z)
     logger.info('{}: \n mean {} \n std {} \n acceptance rate: {}'.format(
