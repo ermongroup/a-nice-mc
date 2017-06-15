@@ -1,6 +1,6 @@
 import numpy as np
 from objectives import Energy
-from utils.evaluation import effective_sample_size
+from utils.evaluation import effective_sample_size, acceptance_rate
 from utils.logger import save_ess, create_logger
 
 logger = create_logger(__name__)
@@ -33,6 +33,7 @@ class Expression(Energy):
 
     def evaluate(self, zv, path=None):
         z, v = zv
+        logger.info('Acceptance rate %.4f' % (acceptance_rate(z)))
         ess = effective_sample_size(z, self.mean(), self.std() * self.std(), logger=logger)
         if path:
             save_ess(ess, path)

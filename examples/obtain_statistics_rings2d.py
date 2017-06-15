@@ -10,8 +10,9 @@ def prior(bs):
 
 if __name__ == '__main__':
     from objectives.expression.ring2d import Ring2d
+    from hmc import HamiltonianMonteCarloSampler
     from utils.statistics import obtain_statistics, NormalMonteCarloSampler
     os.environ['CUDA_VISIBLE_DEVICES'] = ''
     energy_fn = Ring2d(display=False)
-    sampler = NormalMonteCarloSampler(energy_fn, prior)
-    obtain_statistics(sampler, steps=10000, burn_in=3000, batch_size=8000)
+    sampler = HamiltonianMonteCarloSampler(energy_fn, prior)
+    obtain_statistics(sampler, steps=1000, burn_in=300, batch_size=800)

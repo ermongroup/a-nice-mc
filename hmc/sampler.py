@@ -123,8 +123,11 @@ class HamiltonianMonteCarloSampler(object):
 
         self.steps = tf.placeholder(tf.int32, [])
         elems = tf.zeros([self.steps])
+
         self.z_, self.stepsize_, self.avg_acceptance_rate_ = tf.scan(
-            fn, elems, (self.z, self.stepsize, self.avg_acceptance_rate), back_prop=False
+            fn, elems,
+            (self.z, self.stepsize, self.avg_acceptance_rate),
+            back_prop=False
         )
 
         self.sess = tf.Session(

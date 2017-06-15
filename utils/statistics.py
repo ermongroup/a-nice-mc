@@ -1,8 +1,9 @@
 import tensorflow as tf
 import numpy as np
 import time
+from evaluation import acceptance_rate
 from utils.logger import create_logger
-from hmc import metropolis_hastings_accept, HamiltonianMonteCarloSampler
+from hmc import metropolis_hastings_accept
 
 logger = create_logger(__name__)
 
@@ -55,8 +56,9 @@ def obtain_statistics(sampler, steps, burn_in, batch_size):
     z = z[:, burn_in:]
     z = np.reshape(z, [-1, z.shape[-1]])
     z = sampler.energy_fn.statistics(z)
-    logger.info('{}: \n mean {} \n std {}'.format(
+    logger.info('{}: \n mean {} \n std {} \n acceptance rate: {}'.format(
         sampler.energy_fn.name,
         np.mean(z, axis=0, dtype=np.float64),
-        np.std(z, axis=0, dtype=np.float64)
+        np.std(z, axis=0, dtype=np.float64),
+        acceptance_rate(z)
     ))

@@ -1,7 +1,10 @@
 import tensorflow as tf
+import numpy as np
 from objectives import Energy
-from utils.evaluation import effective_sample_size
-from utils.logger import save_ess
+from utils.evaluation import effective_sample_size, acceptance_rate
+from utils.logger import save_ess, create_logger
+
+logger = create_logger(__name__)
 
 
 class BayesianLogisticRegression(Energy):
@@ -45,6 +48,8 @@ class BayesianLogisticRegression(Energy):
                 tf.reshape(self.labels, [1, -1, self.y_dim]),
                 tf.stack([tf.shape(self.z)[0], 1, 1])
             )
+        print(self.data)
+        print(self.labels)
 
     def _vector_to_model(self, v):
         w = v[:, :-self.y_dim]
@@ -59,14 +64,24 @@ class BayesianLogisticRegression(Energy):
         ll = tf.nn.sigmoid_cross_entropy_with_logits(labels=y, logits=logits)
         ll = tf.reduce_sum(ll, axis=[1, 2])
         pr = tf.square((v - self.mu_prior) / self.sig_prior)
-        pr = tf.reduce_sum(pr, axis=1)
-        return ll + pr
+        pr = 0.5 * tf.reduce_sum(pr, axis=1)
+        return pr + ll
 
     def __call__(self, v):
         return self.energy_fn(v, self.data, self.labels)
 
     def evaluate(self, zv, path=None):
         z, v = zv
-        ess = effective_sample_size(z, self.mean(), self.std() * self.std(), logger=logger)
-        if path:
-            save_ess(ess, path)
+        z_ = np.reshape(z, [-1, z.shape[-1]])
+        m = np.mean(z_, axis=0, dtype=np.float64)
+        v = np.var(z_, axis=0, dtype=np.float64)
+        print('mean: {}'.format(m))
+        print('var: {}'.format(v))
+        logger.info('Acceptance rate %.4f' % (acceptance_rate(z)))
+        # ess = effective_sample_size(
+        #     z,
+        #     m, v,
+        #     logger=logger
+        # )
+        # if path:
+        #     save_ess(ess, path)

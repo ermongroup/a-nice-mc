@@ -28,7 +28,6 @@ class NiceLayer(Layer):
         possible extensions to real NVP based flow models.
         :param dims: structure of the nice network
         :param name: TensorFlow variable name scope for variable reuse.
-        :param reuse: If variables are reused.
         :param swap: Update x if True, or update v if False.
         """
         super(NiceLayer, self).__init__()

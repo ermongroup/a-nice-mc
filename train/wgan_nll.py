@@ -141,7 +141,7 @@ class Trainer(object):
             d_iters=5, epoch_size=500, log_freq=100, max_iters=100000,
             bootstrap_steps=5000, bootstrap_burn_in=1000,
             bootstrap_batch_size=32, bootstrap_discard_ratio=0.5,
-            evaluate_steps=1000, evaluate_burn_in=1000, evaluate_batch_size=32
+            evaluate_steps=5000, evaluate_burn_in=1000, evaluate_batch_size=32
             ):
         def _feed_dict(bs):
             return {

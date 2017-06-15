@@ -6,14 +6,14 @@ sys.path.append(os.getcwd())
 
 
 def prior(bs):
-    return np.random.normal(0.0, 1.0, [bs, 25])
+    return np.random.normal(0.0, 1.0, [bs, 3])
 
 if __name__ == '__main__':
-    from objectives.bayes_logistic_regression.german import German
+    from objectives.bayes_logistic_regression.synthetic import Synthetic
     from utils.statistics import obtain_statistics, NormalMonteCarloSampler
     from utils.statistics import HamiltonianMonteCarloSampler
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-    energy_fn = German(batch_size=100)
+    energy_fn = Synthetic(batch_size=100)
     # sampler = HamiltonianMonteCarloSampler(
     #     energy_fn, prior, stepsize=0.005, n_steps=40,
     #     inter_op_parallelism_threads=8,
