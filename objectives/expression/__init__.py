@@ -34,6 +34,7 @@ class Expression(Energy):
     def evaluate(self, zv, path=None):
         z, v = zv
         logger.info('Acceptance rate %.4f' % (acceptance_rate(z)))
+        z = self.statistics(z)
         ess = effective_sample_size(z, self.mean(), self.std() * self.std(), logger=logger)
         if path:
             save_ess(ess, path)
@@ -43,6 +44,9 @@ class Expression(Energy):
         self.ax1.clear()
         self.ax2.clear()
         z, v = zv
+        if path:
+            np.save(path + '/trajectory.npy', z)
+
         z = np.reshape(z, [-1, 2])
         self.ax1.hist2d(z[:, 0], z[:, 1], bins=400)
         self.ax1.set(xlim=self.xlim(), ylim=self.ylim())

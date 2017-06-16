@@ -55,19 +55,23 @@ class NormalMonteCarloSampler(object):
 
 def obtain_statistics(sampler, steps, burn_in, batch_size):
     z = sampler.sample(steps + burn_in, batch_size)
-    z = z[:, burn_in:]
+    z_ = z[:, burn_in:]
+
+    z = np.reshape(z, [-1, z.shape[-1]])
+    z = sampler.energy_fn.statistics(z)
+    m = np.mean(z, axis=0, dtype=np.float64)
+    s = np.std(z, axis=0, dtype=np.float64)
+    logger.info('{}: \n mean {} \n std {} \n acceptance rate: {}'.format(
+        sampler.energy_fn.name,
+        m,
+        s,
+        acceptance_rate(z)
+    ))
+
     energy_fn = sampler.energy_fn
     effective_sample_size(
-        z,
+        z_,
         energy_fn.mean(),
         energy_fn.std() * energy_fn.std(),
         logger
     )
-    z = np.reshape(z, [-1, z.shape[-1]])
-    z = sampler.energy_fn.statistics(z)
-    logger.info('{}: \n mean {} \n std {} \n acceptance rate: {}'.format(
-        sampler.energy_fn.name,
-        np.mean(z, axis=0, dtype=np.float64),
-        np.std(z, axis=0, dtype=np.float64),
-        acceptance_rate(z)
-    ))

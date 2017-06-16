@@ -7,7 +7,7 @@ logger = create_logger(__name__)
 
 
 class MixtureOfGaussians(Expression):
-    def __init__(self, name='mog', display=True):
+    def __init__(self, name='mog6', display=True):
         super(MixtureOfGaussians, self).__init__(name=name, display=display)
         self.z = tf.placeholder(tf.float32, [None, 2], name='z')
 
