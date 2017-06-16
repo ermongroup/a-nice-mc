@@ -24,9 +24,10 @@ To run the Ring experiment:
 python examples/nice_ring2d.py
 ```
 
-To run the Mixture of Gaussian experiment:
+To run the Mixture of Gaussian experiments:
 ```
-python examples/nice_mog.py
+python examples/nice_mog2.py
+python examples/nice_mog6.py
 ```
 
 ### Bayesian Logistic Regression Posterior Inference
@@ -34,6 +35,11 @@ python examples/nice_mog.py
 To run the experiment on Australian dataset:
 ```
 python examples/nice_australian.py
+```
+
+To run the experiment on the German dataset:
+```
+python examples/nice_german.py
 ```
 
 ## How A-NICE-MC Works
