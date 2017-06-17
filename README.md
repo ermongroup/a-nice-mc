@@ -43,8 +43,17 @@ To run the experiment on the German dataset:
 python examples/nice_german.py
 ```
 
+To run the experiment on the Heart dataset:
+```
+python examples/nice_heart.py
+```
+
+The resulting ESS should be at least as good as reported in the paper (if not better, train it for longer iterations).
+
+The running time depends on the machine, so only the ratio between running times of A-NICE-MC and HMC is particularly meaningful. **Sanity check**: during one update HMC computes the entire dataset for 40 + 1 times (HMC steps + MH step), while A-NICE-MC computes the entire dataset for only 1 time (only for MH step); so A-NICE-MC at this stage should not be 40x faster, but it seems reasonable that it is 10x faster.
+
 ### Visualization
-Visualizing samples from a single chain (in the 2d case). Details are in [figs/animation.ipynb](figs/animation.ipynb).
+Visualizing samples from a single chain (in the 2d case). Details are in [figs/animation.ipynb](figs/animation.ipynb) (install ffmpeg if necessary).
 
 ![](figs/lord_of_rings.gif)
 
@@ -56,7 +65,7 @@ Visualizing samples from a single chain (in the 2d case). Details are in [figs/a
 ## How A-NICE-MC Works
 In general, [Markov Chain Monte Carlo](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) methods estimate a density `p(x)` by sampling through a Markov Chain, where the transition kernel has two components:
 - A proposal `p(x_|x)` that proposes a new `x_` given the previous `x`. The proposal should satisfy [detailed balance](https://en.wikipedia.org/wiki/Detailed_balance).
-- A [Metropolis-Hastings](https://en.wikipedia.org/wiki/Metropolis%E2%80%93Hastings_algorithm) acceptance step, which accepts or rejects `x_` according to `p(x)` and `p(x_)`.
+- A [Metropolis-Hastings](https://en.wikipedia.org/wiki/Metropolis%E2%80%93Hastings_algorithm) acceptance step (MH step), which accepts or rejects `x_` according to `p(x)` and `p(x_)`.
 
 It might be tempting to use any generative model as the proposal; however, training is difficult because the kernel is non-differentiable, and score-based gradient estimator
 are not effective when initially the rejection rate is high.
@@ -108,3 +117,11 @@ Currently, we draw the initial samples from the untrained model (with randomly i
 
 ## Contact
 [tsong@cs.stanford.edu](mailto:tsong@cs.stanford.edu)
+
+This method is very new and experimental, so there might be cases where this fails (or because of poor parameter choices). We welcome all kinds of suggestions - including but not limited to 
+
+- improving the method (MMD loss for `v`? other bootstrap techniques?) 
+- additional experiments in other domains (some other applications that this method would shine?)
+- and how to improve the current code to make experiments more scalable (`save` and `load` feature?)
+
+If something does not work as you would expect - please let me know. It helps everyone to know the strengths as well as weaknesses of the method.
