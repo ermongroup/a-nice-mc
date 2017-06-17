@@ -12,6 +12,8 @@ class German(BayesianLogisticRegression):
         ds = np.std(data, axis=0)
         data = (data - dm) / ds
 
+        print(data.shape)
+
         super(German, self).__init__(data, labels, batch_size=batch_size)
         self.name = name
 

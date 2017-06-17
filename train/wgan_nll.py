@@ -14,6 +14,9 @@ class Trainer(object):
     Trainer for A-NICE-MC.
     - Wasserstein GAN loss with Gradient Penalty for x
     - Cross entropy loss for v
+
+    Maybe for v we can use MMD loss, but in my experiments
+    I didn't see too much of an improvement over cross entropy loss.
     """
     def __init__(self,
                  network, energy_fn, discriminator,
@@ -67,6 +70,9 @@ class Trainer(object):
         ], 0)
 
         # Concat all v values for log-likelihood training
+        v1_ = v1_[-1]
+        v2_ = v2_[-1]
+        v3_ = v3_[-1]
         v_ = tf.concat([v1_, v2_, v3_], 0)
         v_ = tf.reshape(v_, [-1, self.v_dim])
 
@@ -74,6 +80,9 @@ class Trainer(object):
         d_ = discriminator(x_)
 
         # generator loss
+
+        # TODO: MMD loss (http://szhao.me/2017/06/10/a-tutorial-on-mmd-variational-autoencoders.html)
+        # it is easy to implement, but maybe we should wait after this codebase is settled.
         self.v_loss = tf.reduce_mean(0.5 * tf.multiply(v_, v_))
         self.g_loss = tf.reduce_mean(d_) + self.v_loss * eta
 
