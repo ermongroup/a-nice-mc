@@ -9,7 +9,7 @@ A-NICE-MC stands for *Adversarial Non-linear Independent Component Estimation Mo
 - The proposal is represented through Non-linear Independent Component Estimation (NICE).
 - The NICE network is trained through adversarial methods (A); see [jiamings/markov-chain-gan](https://github.com/jiamings/markov-chain-gan).
 
-Work by [Jiaming Song](tsong.me), [Shengjia Zhao](szhao.me) and [Stefano Ermon](cs.stanford.edu/~ermon).
+Work by [Jiaming Song](http://tsong.me), [Shengjia Zhao](http://szhao.me) and [Stefano Ermon](http://cs.stanford.edu/~ermon).
 
 ## Running the Experiments
 The code depends on tensorflow >= 1.0, numpy, scipy, matplotlib.
