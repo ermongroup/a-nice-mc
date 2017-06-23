@@ -115,6 +115,12 @@ In order to obtain samples to begin training, we adopt a bootstrap technique to 
 
 Currently, we draw the initial samples from the untrained model (with randomly initialized samples). This sounds a bit crazy, but it works in our experiments. For domains with higher dimensions it might be better to start with a chain that has higher acceptance rate.
 
+## Citation
+If you use this code for your research, please cite our paper. (Will come out on arXiv soon)
+
+## Related Projects
+[markov-chain-gan](https://github.com/jiamings/markov-chain-gan): training a transition operator for a Markov chain. This contains part of the image generation experiments for this paper.
+
 ## Contact
 [tsong@cs.stanford.edu](mailto:tsong@cs.stanford.edu)
 
