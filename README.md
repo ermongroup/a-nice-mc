@@ -1,5 +1,11 @@
 # A-NICE-MC: Adversarial Training for MCMC
 
+Tensorflow implementation for the paper [A-NICE-MC: Adversarial Training for MCMC](https://arxiv.org/abs/1706.07561)
+
+by [Jiaming Song](http://tsong.me), [Shengjia Zhao](http://szhao.me) and [Stefano Ermon](http://cs.stanford.edu/~ermon), Stanford Artificial Intelligence Laboratory
+
+---
+
 **A-NICE-MC** is a framework that trains a *parametric* Markov Chain Monte Carlo proposal.
 It achieves higher performance than traditional nonparametric proposals, such as Hamiltonian Monte Carlo (HMC).
 This repository provides code to replicate the experiments, as well as providing grounds for further research.
@@ -8,8 +14,6 @@ A-NICE-MC stands for *Adversarial Non-linear Independent Component Estimation Mo
 - The framework utilizes a parametric proposal for Markov Chain Monte Carlo (MC).
 - The proposal is represented through Non-linear Independent Component Estimation (NICE).
 - The NICE network is trained through adversarial methods (A); see [jiamings/markov-chain-gan](https://github.com/jiamings/markov-chain-gan).
-
-Work by [Jiaming Song](http://tsong.me), [Shengjia Zhao](http://szhao.me) and [Stefano Ermon](http://cs.stanford.edu/~ermon).
 
 ## Running the Experiments
 The code depends on tensorflow >= 1.0, numpy, scipy, matplotlib.
@@ -116,7 +120,16 @@ In order to obtain samples to begin training, we adopt a bootstrap technique to 
 Currently, we draw the initial samples from the untrained model (with randomly initialized samples). This sounds a bit crazy, but it works in our experiments. For domains with higher dimensions it might be better to start with a chain that has higher acceptance rate.
 
 ## Citation
-If you use this code for your research, please cite our paper. (Will come out on arXiv soon)
+If you use this code for your research, please cite our [paper](https://arxiv.org/abs/1706.07561):
+
+```
+@article{song2017adversarial,
+  title={A-NICE-MC: Adversarial Training for MCMC},
+  author={Song, Jiaming and Zhao, Shengjia and Ermon, Stefano},
+  journal={arXiv preprint arXiv:1706.07561},
+  year={2017}
+}
+```
 
 ## Related Projects
 [markov-chain-gan](https://github.com/jiamings/markov-chain-gan): training a transition operator for a Markov chain. This contains part of the image generation experiments for this paper.
