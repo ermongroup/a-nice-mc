@@ -123,7 +123,7 @@ Currently, we draw the initial samples from the untrained model (with randomly i
 If you use this code for your research, please cite our [paper](https://arxiv.org/abs/1706.07561):
 
 ```
-@article{song2017adversarial,
+@article{song2017nice,
   title={A-NICE-MC: Adversarial Training for MCMC},
   author={Song, Jiaming and Zhao, Shengjia and Ermon, Stefano},
   journal={arXiv preprint arXiv:1706.07561},
