@@ -1,8 +1,8 @@
+import os
 import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
-import os
 
 sys.path.append(os.getcwd())
 
@@ -12,8 +12,8 @@ def prior(bs):
 
 
 if __name__ == '__main__':
-    from utils.statistics import NormalMonteCarloSampler
-    from objectives.expression.ring2d import Ring2d
+    from a_nice_mc.utils.statistics import NormalMonteCarloSampler
+    from a_nice_mc.objectives.expression.ring2d import Ring2d
 
     os.environ['CUDA_VISIBLE_DEVICES'] = ''
 

@@ -1,6 +1,7 @@
-import numpy as np
 import os
 import sys
+
+import numpy as np
 
 sys.path.append(os.getcwd())
 
@@ -9,10 +10,10 @@ def noise_sampler(bs):
     return np.random.normal(0.0, 1.0, [bs, 2])
 
 if __name__ == '__main__':
-    from objectives.expression.mog2 import MixtureOfGaussians
-    from models.discriminator import MLPDiscriminator
-    from models.generator import create_nice_network
-    from train.wgan_nll import Trainer
+    from a_nice_mc.objectives.expression.mog2 import MixtureOfGaussians
+    from a_nice_mc.models.discriminator import MLPDiscriminator
+    from a_nice_mc.models.generator import create_nice_network
+    from a_nice_mc.train.wgan_nll import Trainer
 
     os.environ['CUDA_VISIBLE_DEVICES'] = ''
 

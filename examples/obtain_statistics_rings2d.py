@@ -1,7 +1,7 @@
+import os
 import sys
 
 import numpy as np
-import os
 
 sys.path.append(os.getcwd())
 
@@ -10,9 +10,9 @@ def prior(bs):
     return np.random.normal(0.0, 1.0, [bs, 2])
 
 if __name__ == '__main__':
-    from objectives.expression.ring2d import Ring2d
-    from utils.hmc import HamiltonianMonteCarloSampler
-    from utils.statistics import obtain_statistics
+    from a_nice_mc.objectives.expression.ring2d import Ring2d
+    from a_nice_mc.utils.hmc import HamiltonianMonteCarloSampler
+    from a_nice_mc.utils.statistics import obtain_statistics
 
     os.environ['CUDA_VISIBLE_DEVICES'] = ''
     energy_fn = Ring2d(display=False)

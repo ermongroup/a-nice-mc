@@ -1,6 +1,7 @@
-import numpy as np
 import os
 import sys
+
+import numpy as np
 
 sys.path.append(os.getcwd())
 
@@ -9,8 +10,8 @@ def prior(bs):
     return np.random.normal(0.0, 1.0, [bs, 2])
 
 if __name__ == '__main__':
-    from objectives.expression.mog import MixtureOfGaussians
-    from utils.statistics import obtain_statistics, NormalMonteCarloSampler
+    from a_nice_mc.objectives.expression.mog import MixtureOfGaussians
+    from a_nice_mc.utils.statistics import obtain_statistics, NormalMonteCarloSampler
     os.environ['CUDA_VISIBLE_DEVICES'] = ''
     energy_fn = MixtureOfGaussians(display=False)
     sampler = NormalMonteCarloSampler(energy_fn, prior)
