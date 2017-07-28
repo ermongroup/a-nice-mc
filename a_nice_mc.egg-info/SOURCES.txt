@@ -1,5 +1,0 @@
-a_nice_mc/__init__.py
-a_nice_mc.egg-info/PKG-INFO
-a_nice_mc.egg-info/SOURCES.txt
-a_nice_mc.egg-info/dependency_links.txt
-a_nice_mc.egg-info/top_level.txt
