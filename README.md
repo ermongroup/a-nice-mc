@@ -17,7 +17,7 @@ A-NICE-MC stands for *Adversarial Non-linear Independent Component Estimation Mo
 
 ## Running the Experiments
 The code depends on tensorflow >= 1.0, numpy, scipy, matplotlib.
-It has been tested on Python 2.7.
+It has been tested on both Python 2 and Python 3.
 
 The Effective Sample Size metric for evaluating MCMC algorithms will appear on screen, and is stored in `logs/[experiment_name]/ess.csv`.
 
