@@ -1,8 +1,6 @@
 .idea/
 .DS_Store
 figs/.ipynb_checkpoints
-*.egg_info
-*.pyc
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

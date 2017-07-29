@@ -2,7 +2,7 @@ import time
 
 import numpy as np
 import tensorflow as tf
-from a_nice_mc.utils.evaluation import acceptance_rate, effective_sample_size
+from a_nice_mc.utils.evaluation import acceptance_rate, effective_sample_size, gelman_rubin_diagnostic
 from a_nice_mc.utils.hmc import metropolis_hastings_accept
 from a_nice_mc.utils.logger import create_logger
 
@@ -55,9 +55,11 @@ class NormalMonteCarloSampler(object):
 def obtain_statistics(sampler, steps, burn_in, batch_size):
     z = sampler.sample(steps + burn_in, batch_size)
     z_ = z[:, burn_in:]
+    z_ = sampler.energy_fn.statistics(z_)
 
     z = np.reshape(z, [-1, z.shape[-1]])
     z = sampler.energy_fn.statistics(z)
+
     m = np.mean(z, axis=0, dtype=np.float64)
     s = np.std(z, axis=0, dtype=np.float64)
     logger.info('{}: \n mean {} \n std {} \n acceptance rate: {}'.format(
@@ -73,4 +75,8 @@ def obtain_statistics(sampler, steps, burn_in, batch_size):
         energy_fn.mean(),
         energy_fn.std() * energy_fn.std(),
         logger
+    )
+
+    gelman_rubin_diagnostic(
+        z_, logger, energy_fn.mean()
     )

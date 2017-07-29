@@ -15,4 +15,4 @@ if __name__ == '__main__':
     os.environ['CUDA_VISIBLE_DEVICES'] = ''
     energy_fn = MixtureOfGaussians(display=False)
     sampler = NormalMonteCarloSampler(energy_fn, prior)
-    obtain_statistics(sampler, steps=5000, burn_in=1000, batch_size=32)
+    obtain_statistics(sampler, steps=5000, burn_in=1000, batch_size=2)
