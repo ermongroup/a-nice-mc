@@ -1,6 +1,6 @@
 # A-NICE-MC: Adversarial Training for MCMC
 
-Tensorflow implementation for the paper [A-NICE-MC: Adversarial Training for MCMC](https://arxiv.org/abs/1706.07561)
+Tensorflow implementation for the paper [A-NICE-MC: Adversarial Training for MCMC](https://arxiv.org/abs/1706.07561), NIPS 2017.
 
 by [Jiaming Song](http://tsong.me), [Shengjia Zhao](http://szhao.me) and [Stefano Ermon](http://cs.stanford.edu/~ermon), Stanford Artificial Intelligence Laboratory
 
@@ -16,7 +16,7 @@ A-NICE-MC stands for *Adversarial Non-linear Independent Component Estimation Mo
 - The NICE network is trained through adversarial methods (A); see [jiamings/markov-chain-gan](https://github.com/jiamings/markov-chain-gan).
 
 ## Running the Experiments
-The code depends on tensorflow >= 1.0, numpy, scipy, matplotlib.
+The code depends on tensorflow >= 1.0, numpy, scipy, matplotlib, and pandas.
 It has been tested on both Python 2 and Python 3.
 
 The Effective Sample Size metric for evaluating MCMC algorithms will appear on screen, and is stored in `logs/[experiment_name]/ess.csv`.
