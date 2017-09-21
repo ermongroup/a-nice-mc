@@ -29,4 +29,4 @@ if __name__ == '__main__':
     )
 
     trainer = Trainer(generator, energy_fn, discriminator, noise_sampler, b=16, m=2)
-    trainer.train(bootstrap_steps=5000, bootstrap_burn_in=1000)
+    trainer.train(bootstrap_steps=5000, bootstrap_burn_in=1000, bootstrap_discard_ratio=0.8)

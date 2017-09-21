@@ -128,23 +128,39 @@ class InferenceOperator(object):
         self.network = network
         self.energy_fn = energy_fn
 
-    def __call__(self, inputs, steps):
+    def __call__(self, inputs, steps, nice_steps=1):
+        def nice_proposal(zv, x):
+            """
+            Nice Proposal (without Metropolis-Hastings).
+            `z` is the input state.
+            `v` is created as a dummy variable to allow output of v_, for debugging purposes.
+            :param zv:
+            :param x:
+            :return: next state `z_`, and the corresponding auxiliary variable `v_' (without MH).
+            """
+            z, v = zv
+            z_, v_ = self.network([z, v], is_backward=(x < 0.5)) #(tf.random_uniform([]) < 0.5))
+            return z_, v_
+
         def fn(zv, x):
             """
             Transition with Metropolis-Hastings.
             `z` is the input state.
             `v` is created as a dummy variable to allow output of v_, for debugging purposes.
+            :param zv: [z, v]. It is written in this form merely to appeal to Python 3.
             :param x: variable only for specifying the number of steps
             :return: next state `z_`, and the corresponding auxiliary variable `v_`.
             """
             z, v = zv
             v = tf.random_normal(shape=tf.stack([tf.shape(z)[0], self.network.v_dim]))
-            z_, v_ = self.network([z, v], is_backward=(tf.random_uniform([]) < 0.5))
+            # z_, v_ = self.network([z, v], is_backward=(tf.random_uniform([]) < 0.5))
+            z_, v_ = tf.scan(nice_proposal, x * tf.random_uniform([]), (z, v), back_prop=False)
+            z_, v_ = z_[-1], v_[-1]
             ep = hamiltonian(z, v, self.energy_fn)
             en = hamiltonian(z_, v_, self.energy_fn)
             accept = metropolis_hastings_accept(energy_prev=ep, energy_next=en)
             z_ = tf.where(accept, z_, z)
             return z_, v_
 
-        elems = tf.zeros([steps])
+        elems = tf.ones([steps, nice_steps])
         return tf.scan(fn, elems, inputs, back_prop=False)
