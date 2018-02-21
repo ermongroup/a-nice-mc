@@ -1,5 +1,6 @@
 import os
 import sys
+import argparse
 
 import numpy as np
 
@@ -15,11 +16,15 @@ if __name__ == '__main__':
     from a_nice_mc.utils.hmc import HamiltonianMonteCarloSampler
     from a_nice_mc.utils.logger import create_logger
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--stepsize', type=float, default=0.01)
+    parser.add_argument('--gpu', type=str, default='0')
+    args = parser.parse_args()
     logger = create_logger(__name__)
 
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
     energy_fn = Heart(batch_size=32)
     sampler = HamiltonianMonteCarloSampler(
-        energy_fn, prior, stepsize=0.01, n_steps=40
+        energy_fn, prior, stepsize=args.stepsize, n_steps=40
     )
     obtain_statistics(sampler, steps=5000, burn_in=1000, batch_size=32)

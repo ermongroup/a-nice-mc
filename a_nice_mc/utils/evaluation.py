@@ -52,7 +52,7 @@ def gelman_rubin_diagnostic(x, logger, mu=None):
     theta = np.mean(x, axis=1)
     sigma = np.var(x, axis=1)
     # theta_m = np.mean(theta, axis=0)
-    theta_m = mu if mu else np.mean(theta, axis=0)
+    theta_m = mu if mu is not None else np.mean(theta, axis=0)
     b = float(n) / float(m-1) * np.sum((theta - theta_m) ** 2)
     w = 1. / float(m) * np.sum(sigma, axis=0)
     v = float(n-1) / float(n) * w + float(m+1) / float(m * n) * b
