@@ -105,7 +105,7 @@ class HamiltonianMonteCarloSampler(object):
             accept, final_pos, final_vel = hmc_move(
                 z,
                 energy_fn,
-                stepsize,
+                s,
                 n_steps
             )
             z_, s_, a_ = hmc_updates(
