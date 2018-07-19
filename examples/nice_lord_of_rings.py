@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
     os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
-    energy_fn = LordOfRings(display=False)
+    energy_fn = LordOfRings(display=True)
     discriminator = MLPDiscriminator([400, 400, 400])
     generator = create_nice_network(
         2, 2,

@@ -93,12 +93,14 @@ class HamiltonianMonteCarloSampler(object):
     def __init__(self, energy_fn, prior, stepsize=0.1, n_steps=10,
                  target_acceptance_rate=0.65, avg_acceptance_slowness=0.9,
                  stepsize_min=0.001, stepsize_max=1000.0, stepsize_dec=0.97, stepsize_inc=1.03,
-                 inter_op_parallelism_threads=1, intra_op_parallelism_threads=1):
+                 inter_op_parallelism_threads=1, intra_op_parallelism_threads=1,
+                 sess=False):
         self.energy_fn = energy_fn
         self.prior = prior
         self.z = self.energy_fn.z
-        self.stepsize = tf.Variable(stepsize)
-        self.avg_acceptance_rate = tf.Variable(target_acceptance_rate)
+        self.stepsize = tf.constant(stepsize)
+        self.avg_acceptance_rate = tf.constant(target_acceptance_rate)
+        self.sess = sess
 
         def fn(zsa, x):
             z, s, a = zsa
@@ -132,13 +134,15 @@ class HamiltonianMonteCarloSampler(object):
             back_prop=False
         )
 
-        self.sess = tf.Session(
-            config=tf.ConfigProto(
-                inter_op_parallelism_threads=inter_op_parallelism_threads,
-                intra_op_parallelism_threads=intra_op_parallelism_threads
+        if not self.sess:
+            # only want to start a session if running this independently
+            self.sess = tf.Session(
+                config=tf.ConfigProto(
+                    inter_op_parallelism_threads=inter_op_parallelism_threads,
+                    intra_op_parallelism_threads=intra_op_parallelism_threads
+                )
             )
-        )
-        self.sess.run(tf.global_variables_initializer())
+            self.sess.run(tf.global_variables_initializer())
 
     def sample(self, steps, batch_size):
         start = time.time()

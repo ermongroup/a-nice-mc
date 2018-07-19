@@ -6,6 +6,7 @@ import tensorflow as tf
 from a_nice_mc.utils.bootstrap import Buffer
 from a_nice_mc.utils.logger import create_logger
 from a_nice_mc.utils.nice import TrainingOperator, InferenceOperator
+from a_nice_mc.utils.hmc import HamiltonianMonteCarloSampler as HmcSampler
 
 
 class Trainer(object):
@@ -28,7 +29,9 @@ class Trainer(object):
         self.b = tf.to_int32(tf.reshape(tf.multinomial(tf.ones([1, b]), 1), [])) + 1
         self.m = tf.to_int32(tf.reshape(tf.multinomial(tf.ones([1, m]), 1), [])) + 1
         self.network = network
+        self.hmc_sampler = None
         self.x_dim, self.v_dim = network.x_dim, network.v_dim
+
 
         self.z = tf.placeholder(tf.float32, [None, self.x_dim])
         self.x = tf.placeholder(tf.float32, [None, self.x_dim])
@@ -119,6 +122,7 @@ class Trainer(object):
             intra_op_parallelism_threads=1,
             gpu_options=gpu_options,
         ))
+
         self.sess.run(self.init_op)
         self.ns = noise_sampler
         self.ds = None
@@ -127,6 +131,8 @@ class Trainer(object):
             os.makedirs(self.path)
         except OSError:
             pass
+
+
 
     def sample(self, steps=2000, nice_steps=1, batch_size=32):
         start = time.time()
@@ -139,9 +145,19 @@ class Trainer(object):
         v = np.transpose(v, axes=[1, 0, 2])
         return z, v
 
-    def bootstrap(self, steps=5000, nice_steps=1, burn_in=1000, batch_size=32, discard_ratio=0.5):
+    def bootstrap(self, steps=5000, nice_steps=1, burn_in=1000, batch_size=32,
+                  discard_ratio=0.5, use_hmc=False):
         # TODO: it might be better to implement bootstrap in a separate class
-        z, _ = self.sample(steps + burn_in, nice_steps, batch_size)
+        if use_hmc:
+
+            if not self.hmc_sampler:
+                self.hmc_sampler = HmcSampler(self.energy_fn,
+                                              lambda bs: np.random.randn(bs, self.x_dim),
+                                              sess=self.sess)
+
+            z = self.hmc_sampler.sample(steps, batch_size)
+        else:
+            z, _ = self.sample(steps + burn_in, nice_steps, batch_size)
         z = np.reshape(z[:, burn_in:], [-1, z.shape[-1]])
         if self.ds:
             self.ds.discard(ratio=discard_ratio)
@@ -153,7 +169,8 @@ class Trainer(object):
               d_iters=5, epoch_size=500, log_freq=100, max_iters=100000,
               bootstrap_steps=5000, bootstrap_burn_in=1000,
               bootstrap_batch_size=32, bootstrap_discard_ratio=0.5,
-              evaluate_steps=5000, evaluate_burn_in=1000, evaluate_batch_size=32, nice_steps=1):
+              evaluate_steps=5000, evaluate_burn_in=1000, evaluate_batch_size=32, nice_steps=1,
+              hmc_epochs=1):
         """
         Train the NICE proposal using adversarial training.
         :param d_iters: number of discrtiminator iterations for each generator iteration
@@ -169,6 +186,7 @@ class Trainer(object):
         :param evaluate_batch_size: # of chains for evaluating performance
         :param nice_steps: Experimental.
             num of steps for running the nice proposal before MH. For now do not use larger than 1.
+        :param hmc_epochs: number of epochs to bootstrap off HMC rather than NICE proposal
         :return:
         """
         def _feed_dict(bs):
@@ -176,11 +194,17 @@ class Trainer(object):
 
         batch_size = 32
         train_time = 0
+        num_epochs = 0
+        use_hmc = True
         for t in range(0, max_iters):
             if t % epoch_size == 0:
+                num_epochs += 1
+                if num_epochs > hmc_epochs:
+                    use_hmc = False
                 self.bootstrap(
                     steps=bootstrap_steps, burn_in=bootstrap_burn_in,
-                    batch_size=bootstrap_batch_size, discard_ratio=bootstrap_discard_ratio
+                    batch_size=bootstrap_batch_size, discard_ratio=bootstrap_discard_ratio,
+                    use_hmc=use_hmc
                 )
                 z, v = self.sample(evaluate_steps + evaluate_burn_in, nice_steps, evaluate_batch_size)
                 z, v = z[:, evaluate_burn_in:], v[:, evaluate_burn_in:]
