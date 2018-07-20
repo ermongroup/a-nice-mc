@@ -1,5 +1,6 @@
 import logging
 import sys
+import os
 import numpy as np
 import pandas as pd
 
@@ -18,3 +19,11 @@ def create_logger(module_name, level=logging.INFO):
 def save_ess(ess, path):
     df = pd.DataFrame(np.reshape(ess, [1, -1]))
     df.to_csv('{}/ess.csv'.format(path), mode='a', header=False)
+
+
+def ensure_directory(path):
+    try:
+        os.makedirs(path)
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            raise
