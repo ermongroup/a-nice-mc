@@ -1,7 +1,8 @@
 import numpy as np
 import tensorflow as tf
 from a_nice_mc.objectives import Energy
-from a_nice_mc.utils.evaluation import effective_sample_size, acceptance_rate
+from a_nice_mc.utils.evaluation import batch_effective_sample_size as effective_sample_size
+from a_nice_mc.utils.evaluation import acceptance_rate
 from a_nice_mc.utils.logger import save_ess, create_logger
 
 logger = create_logger(__name__)

@@ -153,5 +153,6 @@ class HamiltonianMonteCarloSampler(object):
         end = time.time()
         logger.info('batches [%d] steps [%d] time [%5.4f] steps/s [%5.4f]' %
                     (batch_size, steps, end - start, steps * batch_size / (end - start)))
+        logger.info('average recent acceptance rate [%5.4f]' % np.mean(acceptance_rate[-int(steps*0.1):]))
         z = np.transpose(z, [1, 0, 2])
         return z
