@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
     # os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
-    energy_fn = Boston(batch_size=32)
+    energy_fn = Boston()
     discriminator = MLPDiscriminator([800, 800, 800])
     generator = create_nice_network(
         energy_fn.theta_dim, 50,
@@ -29,4 +29,5 @@ if __name__ == '__main__':
     )
 
     trainer = Trainer(generator, energy_fn, discriminator, noise_sampler, b=16, m=2)
-    trainer.train(bootstrap_steps=5000, bootstrap_burn_in=1000, bootstrap_discard_ratio=0.8)
+    trainer.train(bootstrap_steps=100, bootstrap_burn_in=0, bootstrap_discard_ratio=0.8,
+                  hmc_epochs=1)

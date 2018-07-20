@@ -1,7 +1,8 @@
 import numpy as np
 import tensorflow as tf
 from a_nice_mc.objectives import Energy
-from a_nice_mc.utils.evaluation import effective_sample_size, acceptance_rate
+from a_nice_mc.utils.evaluation import batch_effective_sample_size as effective_sample_size
+from a_nice_mc.utils.evaluation import  acceptance_rate
 from a_nice_mc.utils.logger import save_ess, create_logger
 
 logger = create_logger(__name__)
@@ -23,6 +24,7 @@ class NN(Energy):
         self.x_dim = data.shape[1]
         self.y_dim = labels.shape[1]
         self.prec_prior = prec
+        self.z = tf.placeholder(tf.float32, [None, self.theta_dim])
 
         self.data = tf.constant(data, tf.float32)
         self.labels = tf.constant(labels, tf.float32)
@@ -62,14 +64,10 @@ class NN(Energy):
     def evaluate(self, zv, path=None):
         z, v = zv
         z_ = np.reshape(z, [-1, z.shape[-1]])
-        m = np.mean(z_, axis=0, dtype=np.float64)
-        v = np.std(z_, axis=0, dtype=np.float64)
-        print('mean: {}'.format(m))
-        print('std: {}'.format(v))
         logger.info('Acceptance rate %.4f' % (acceptance_rate(z)))
         ess = effective_sample_size(
             z,
-            self.mean(), self.std() * self.std(),
+            None, None,
             logger=logger
         )
         if path:
